@@ -1,0 +1,19 @@
+abstract: "Convert between graph formats: Graph and Graph::Easy"
+author: Tels <nospam-abuse@bloodgate.com>
+build_requires: 
+  Test::More: 0.42
+distribution_type: module
+generated_by: Module::Install version 0.64
+license: gpl
+name: Graph-Convert
+no_index: 
+  directory: 
+    - inc
+    - t
+recommends: 
+  Graph::Easy::Manual: 0.34
+requires: 
+  Graph: 0.8
+  Graph::Easy: 0.48
+  perl: 5.8.1
+version: 0.01

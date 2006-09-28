@@ -1,0 +1,7 @@
+Revision history for Graph::Convert:
+
+2006-09-28 v0.01 Tels 14 tests
+  * first release
+  * require Graph v0.80
+  * require Graph::Easy v0.48
+

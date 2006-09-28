@@ -1,0 +1,18 @@
+Graph-Convert
+=============
+
+Convert between various graph formats, notably 'Graph' and 'Graph::Easy'.
+
+Installation
+============
+
+See INSTALL on how to install this module.
+
+AUTHOR
+======
+
+Copyright (C) 2006 by Tels http://bloodgate.com/
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms of the GPL version 2.
+
