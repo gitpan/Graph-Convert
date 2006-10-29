@@ -11,9 +11,10 @@ no_index:
     - inc
     - t
 recommends: 
-  Graph::Easy::Manual: 0.34
+  Graph::Easy::As_svg: 0.21
+  Graph::Easy::Manual: 0.35
 requires: 
   Graph: 0.8
-  Graph::Easy: 0.48
+  Graph::Easy: 0.49
   perl: 5.8.1
-version: 0.01
+version: 0.03

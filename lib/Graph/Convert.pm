@@ -10,7 +10,7 @@ use 5.008001;
 use Graph::Easy;
 use Graph;
 
-$VERSION = '0.01';
+$VERSION = '0.03';
 
 use strict;
 
@@ -23,18 +23,40 @@ sub as_graph
   my ($self,$in) = @_;
 
   Graph::Easy::Base->_croak(
-    "as_graph needs a Graph::Easy object, but got '", ref($in). "'" )
+    "as_graph needs a Graph::Easy object, but got '". ref($in). "'" )
    unless ref($in) && $in->isa('Graph::Easy');
  
-  my $out = Graph->new(); 
+  my $out = Graph->new( multiedged => 1); 
 
+  # add the graph attributes
+  my $att = $in->{att};
+
+  for my $class (keys %$att)
+    {
+    my $c = $att->{$class};
+    for my $attr (keys %$c)
+      {
+      $out->set_graph_attribute($class.'_'.$attr, $c->{$attr});
+      }
+    }
+
+  # add all nodes
   for my $n ($in->nodes())
     {
+    # the node name is unique, so we can use it as the "vertex id"
     $out->add_vertex($n->{name});
+    my $attr = $n->raw_attributes();
+    $out->set_vertex_attributes($n->{name}, $attr);
     }
+
+  # add all edges
   for my $e ($in->edges())
     {
-    $out->add_edge($e->{from}->{name},$e->{to}->{name});
+    # Adding an edge more than once will result in a new ID
+    my $from = $e->{from}->{name}; my $to = $e->{to}->{name};
+    my $id = $out->add_edge_get_id($from,$to);
+    my $attr = $e->raw_attributes();
+    $out->set_edge_attributes_by_id($from, $to, $id, $attr);
     }
 
   $out;
@@ -46,18 +68,39 @@ sub as_graph_easy
   my ($self,$in) = @_;
  
   Graph::Easy::Base->_croak(
-    "as_graph_easy needs a Graph object, but got '", ref($in). "'" )
+    "as_graph_easy needs a Graph object, but got '". ref($in). "'" )
    unless ref($in) && $in->isa('Graph');
  
   my $out = Graph::Easy->new(); 
 
+  # restore the graph attributes
+  my $att = $in->get_graph_attributes();
+
+  for my $key (keys %$att)
+    {
+    next unless $key =~ /^((graph|(node|edge|group))(\.\w+)?)_(.+)/;
+
+    my $class = $1; my $name = $5;
+
+    $out->set_attribute($1,$5, $att->{$key});
+    }
+
   for my $n ($in->vertices())
     {
-    $out->add_node($n);
+    my $node = $out->add_node($n);
+    my $attr = $in->get_vertex_attributes($n);
+    $node->set_attributes($attr);
     }
   for my $e ($in->edges())
     {
-    $out->add_edge($e->[0],$e->[1]);
+    # get all the IDs in case of the edge existing more than once:
+    my @ids = $in->get_multiedge_ids($e->[0], $e->[1]);
+    for my $id (@ids)
+      {
+      my $edge = $out->add_edge($e->[0],$e->[1]);
+      my $attr = $in->get_edge_attributes_by_id($e->[0], $e->[1], $id);
+      $edge->set_attributes($attr);
+      }
     }
 
   $out;
@@ -131,8 +174,23 @@ Converts the given L<Graph> object into a L<Graph::Easy> object.
 
 =head1 CAVEATS
 
-This module does only convert vertices and edges, it neglets any attributes
-as well as subgraphs/groups.
+=over 12
+
+=item as_graph()
+
+This routine always creates a multiedged graph, even if the input
+Graph:Easy is a simple one - e.g. with never more than one edge
+leading from node A to B.
+
+=item as_graph_easy()
+
+This routine expects multiedged graph.
+
+=back
+
+=head1 SEE ALSO
+
+L<Graph>, L<Graph::Easy> and L<Graph::Easy::Manual>.
 
 =head1 LICENSE
 

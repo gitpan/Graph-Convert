@@ -18,6 +18,7 @@ META.yml			Module meta-data
 README
 SIGNATURE
 TODO
-t/convert.t
+t/att.t				attribute conversion
+t/convert.t			general basic tests
 t/pod.t				test the POD for correctness
 t/pod_cov.t			test the POD for covering all subroutines
