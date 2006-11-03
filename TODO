@@ -1,11 +1,6 @@
 
 * as_graph_easy: 
   + accept multi-vertexed graphs as input
-  + accept non multi-edged graphs as input
-* as_graph: 
-  + create a non multi-edged graph if input graph is simple
 * groups are not added as objects:
   + thus they lose their attributes
   + nested group info is not carried over
-* add more tests
-

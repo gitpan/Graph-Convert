@@ -1,5 +1,11 @@
 Revision history for Graph::Convert:
 
+2006-11-03 v0.04 Tels 63 tests
+  * add: as_multiedged_graph()
+  * as_graph() creates a simple or multiedged graph depending on input
+  * as_graph_easy() can handle simple input graphs now, too
+  * fix as_graph_easy(): graphs with multiedges had them added multiple times
+
 2006-10-29 v0.03 Tels 24 tests
   * some fixes for Graph::Easy v0.49
   * class/graph attributes are now carried over 
@@ -10,7 +16,7 @@ Revision history for Graph::Convert:
   * recommend Graph::Easy::As_svg v0.21
   * the conversion now carries attributes over
 
-2006-09-28 v0.01 Tels 14 tests (unreleased)
+2006-09-28 v0.01 Tels 14 tests
   * first release
   * require Graph v0.80
   * require Graph::Easy v0.48
