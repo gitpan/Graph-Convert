@@ -1,7 +1,6 @@
 ############################################################################
-# Convert between various graph formats.
+# Convert between Graph::Easy and Graph.
 #
-# (c) by Tels 2006.
 #############################################################################
 
 package Graph::Convert;
@@ -10,7 +9,7 @@ use 5.008001;
 use Graph::Easy;
 use Graph;
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 use strict;
 
@@ -42,7 +41,32 @@ sub _add_basics
     # the node name is unique, so we can use it as the "vertex id"
     $out->add_vertex($n->{name});
     my $attr = $n->raw_attributes();
+    # store also the node's group
+    my $ng = $n->group();
+    if (defined $ng)
+      {
+      $attr->{group} = $ng->name();
+      }
     $out->set_vertex_attributes($n->{name}, $attr);
+    }
+
+  # add all groups as a special attribute list
+  for my $g ($in->groups())
+    {
+    my $attr = $g->raw_attributes();
+    # "group_" is already used by the class attribute
+    my $prefix = 'grp_' . $g->id() . '_';
+    # store the group name, too
+    $out->set_graph_attribute($prefix.'name', $g->name());
+    my $group_group = $g->group();
+    if (defined $group_group)
+      {
+      $out->set_graph_attribute($prefix.'group', $group_group->name());
+      }
+    for my $k (keys %$attr)
+      {
+      $out->set_graph_attribute($prefix.$k, $attr->{$k});
+      }
     }
 
   $out;
@@ -111,11 +135,24 @@ sub as_graph_easy
  
   my $out = Graph::Easy->new(); 
 
-  # restore the graph attributes
+  my $group_ids = {};
+  # restore the graph attributes (and create all the group objects)
   my $att = $in->get_graph_attributes();
-
   for my $key (keys %$att)
     {
+    if ($key =~ /^grp_([0-9]+)_([A-Za-z_-]+)/)
+      {
+      my ($id,$a) = ($1,$2);
+      # create the group unless we already created it
+      if (!exists $group_ids->{$id})
+        {
+        my $group_name = $att->{"grp_${id}_name"} || 'unknown group name';
+        $group_ids->{$id} = $out->add_group( $group_name );
+        }
+      my $grp = $group_ids->{$id};
+      # set the attribute on the appropriate group object
+      $grp->set_attribute($a, $att->{$key}) unless $a eq 'name';
+      }
     next unless $key =~ /^((graph|(node|edge|group))(\.\w+)?)_(.+)/;
 
     my $class = $1; my $name = $5;
@@ -231,14 +268,19 @@ making it somewhat complicated to switch between these two.
 It does have an extensive set of algorithms to manipulate the graph, but no
 layout capabilities.
 
+C<Graph> does not support the notion of subgraphs (or "groups" as they are
+called in C<Graph::Easy>). While you could assign some sort of group attribute
+to nodes, this would have no special meaning to the Graph module.
+
 =item Graph::Easy
 
 C<Graph::Easy> uses the same representation for multi-edged and simple graphs,
-but has only basic operations to manipulate the graph.
+but has only basic operations to manipulate the graph and its contents.
 
 It has, however, a build-in layouter which can lay out the graph on a
-grid, as well the ability to output graphviz code. This enables output
-of ASCII, HTML, SVG and all the formats that graphviz supports, like PNG.
+grid, as well the ability to output Graphviz and VCG/GDL code. This enables
+output of ASCII, HTML, SVG and all the formats that graphviz supports, like
+PDF or PNG.
 
 In addition, C<Graph::Easy> supports class attributes. By setting the
 attribute for a class and putting objects (nodes/edges etc) into
@@ -302,7 +344,7 @@ L<Graph>, L<Graph::Easy> and L<Graph::Easy::Manual>.
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
-it under the terms of the GPL version 2.
+it under the terms of the GPL version 2 or later.
 
 See the LICENSE file for a copy of the GPL.
 
@@ -311,7 +353,7 @@ X<license>
 
 =head1 AUTHOR
 
-Copyright (C) 2006 by Tels L<http://bloodgate.com>
+Copyright (C) 2006 - 2007 by Tels L<http://bloodgate.com>
 
 X<tels>
 

@@ -1,6 +1,0 @@
-
-* as_graph_easy: 
-  + accept multi-vertexed graphs as input
-* groups are not added as objects:
-  + thus they lose their attributes
-  + nested group info is not carried over

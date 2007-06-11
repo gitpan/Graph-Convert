@@ -1,5 +1,9 @@
 Revision history for Graph::Convert:
 
+2007-06-11 v0.05 Tels 110 tests
+  * require Graph::Easy v0.55
+  * groups are now preserved (Thanx Donuvi Tanoga for the reminder!)
+  
 2006-11-03 v0.04 Tels 63 tests
   * add: as_multiedged_graph()
   * as_graph() creates a simple or multiedged graph depending on input

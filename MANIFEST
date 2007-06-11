@@ -17,8 +17,8 @@ MANIFEST
 META.yml			Module meta-data
 README
 SIGNATURE
-TODO
 t/att.t				attribute conversion
 t/convert.t			general basic tests
+t/group.t
 t/pod.t				test the POD for correctness
 t/pod_cov.t			test the POD for covering all subroutines

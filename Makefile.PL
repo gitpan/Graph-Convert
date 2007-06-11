@@ -13,14 +13,14 @@ name		'Graph-Convert';
 all_from	'lib/Graph/Convert.pm';
 
 requires	'Graph'		=> 0.80;
-requires	'Graph::Easy'	=> 0.49;
+requires	'Graph::Easy'	=> 0.55;
 
-recommends	'Graph::Easy::Manual'	=> 0.35;
-recommends	'Graph::Easy::As_svg'	=> 0.21;
+recommends	'Graph::Easy::Manual'	=> 0.38;
+recommends	'Graph::Easy::As_svg'	=> 0.22;
 
-build_requires	'Test::More'	=> 0.42;
+build_requires	'Test::More'	=> 0.52;
 
-license		'gpl';		# v2.0 only 
+license		'gpl';
 
 author		'Tels <nospam-abuse@bloodgate.com>';
 
