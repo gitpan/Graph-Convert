@@ -19,6 +19,7 @@ README
 SIGNATURE
 t/att.t				attribute conversion
 t/convert.t			general basic tests
-t/group.t
+t/group.t			test that groups and their attributes survive
+t/undirected.t			test undirected graphs
 t/pod.t				test the POD for correctness
 t/pod_cov.t			test the POD for covering all subroutines

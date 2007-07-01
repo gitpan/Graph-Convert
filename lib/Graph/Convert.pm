@@ -9,7 +9,7 @@ use 5.008001;
 use Graph::Easy;
 use Graph;
 
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 use strict;
 
@@ -35,8 +35,9 @@ sub _add_basics
       }
     }
 
-  # add all nodes
-  for my $n ($in->nodes())
+  # add all nodes (sorted by ID so we can workaround the bug in Graph
+  # for undirected graphs)
+  for my $n (sort { $a->{id} <=> $b->{id} } $in->nodes())
     {
     # the node name is unique, so we can use it as the "vertex id"
     $out->add_vertex($n->{name});
@@ -75,15 +76,16 @@ sub _add_basics
 sub as_graph
   {
   # convert a Graph::Easy object to a Graph object
-  my ($self,$in) = @_;
+  my ($self, $in, $opt) = @_;
 
   $self->error(
     "as_graph needs a Graph::Easy object, but got '". ref($in). "'" )
    unless ref($in) && $in->isa('Graph::Easy');
   
-  return $self->as_multiedged_graph($in) unless $in->is_simple_graph();
+  return $self->as_multiedged_graph($in, $opt) unless $in->is_simple_graph();
 
-  my $out = Graph->new(); 
+  $opt = {} unless defined $opt; 
+  my $out = Graph->new( %$opt ); 
 
   $self->_add_basics($in,$out);
 
@@ -93,6 +95,11 @@ sub as_graph
     my $from = $e->{from}->{name}; my $to = $e->{to}->{name};
     my $edge = $out->add_edge($from,$to);
     my $attr = $e->raw_attributes();
+    if ($opt->{undirected})
+      {
+      # swap the arguments to avoid creating a spurious edge
+      ($from,$to) = ($to,$from) if $e->{to}->{id} < $e->{from}->{id};
+      }
     $out->set_edge_attributes($from, $to, $attr);
     }
 
@@ -101,13 +108,15 @@ sub as_graph
 
 sub as_multiedged_graph
   {
-  my ($self,$in) = @_;
+  my ($self, $in, $opt) = @_;
 
   $self->error(
     "as_multiedged_graph needs a Graph::Easy object, but got '". ref($in). "'" )
    unless ref($in) && $in->isa('Graph::Easy');
- 
-  my $out = Graph->new(multiedged => 1); 
+
+  $opt = {} unless defined $opt; 
+  $opt->{multiedged} = 1;
+  my $out = Graph->new( %$opt );
 
   $self->_add_basics($in,$out);
 
@@ -300,6 +309,9 @@ C<Graph::Convert> supports the following methods:
         my $graph_easy = Graph::Easy->new( );
         my $graph = Graph::Convert->as_graph( $graph_easy );
 
+        my $undirected_graph = 
+	   Graph::Convert->as_graph( $graph_easy, { undirected => 1 } );
+
 Converts the given L<Graph::Easy> object into a L<Graph> object.
 
 This routine creates either a simple or a multiedged graph, depending
@@ -311,6 +323,9 @@ L<as_multiedged_graph>.
 Forcing the output to be a simple graph when the input is multi-edged
 is not supported, as that would require to drop arbitrary edges from
 the input.
+
+The optional parameter is an hash ref with options that is passed
+to C<Graph->new()>.
 
 =head2 as_multiedged_graph()
 

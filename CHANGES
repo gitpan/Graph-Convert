@@ -1,5 +1,9 @@
 Revision history for Graph::Convert:
 
+2007-07-01 v0.06 Tels 110 tests
+  * add parameter "undirected => 1" to as_graph() (Thanx to Daniel Bößwetter!)
+    (and workaround Graph bug with add_edge_attributes *sigh*)
+
 2007-06-11 v0.05 Tels 110 tests
   * require Graph::Easy v0.55
   * groups are now preserved (Thanx Donuvi Tanoga for the reminder!)

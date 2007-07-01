@@ -26,7 +26,9 @@ When the package verified okay, then proceed:
         perl Makefile.PL
 
 If you get warnings about missing or outdated modules, then
-upgrade/install these first. Then run the testsuite:
+upgrade/install these first. 
+
+Then run the testsuite:
 
         make test
 
@@ -36,13 +38,25 @@ If all tests pass, install the package:
 
 You also might want to install the following packages from CPAN:
 
-	Grpah::Easy::Manual	full manual for Graph::Easy (POD & HTML)
+	Graph::Easy::Manual	full manual for Graph::Easy (POD & HTML)
+
+Under windows, install first the free nmake utility from Microsoft, then
+replace "make" with "nmake".
+
+HELP
+====
+
+An comprehensive online manual can be found at:
+
+	http://bloodgate.com/perl/graph/manual/
 
 AUTHOR
 ======
 
-Copyright (C) 2006 by Tels http://bloodgate.com/perl/
+Copyright (C) 2006-2007 by Tels http://bloodgate.com/perl/
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms of the GPL version 2.
+it under the same terms of the GPL version 2 or later.
+
+See the LICENSE file for a copy of the GPL.
 
