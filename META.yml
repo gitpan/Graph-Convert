@@ -18,7 +18,7 @@ recommends:
   Graph::Easy::As_svg: 0.22
   Graph::Easy::Manual: 0.38
 requires: 
-  Graph: 0.8
-  Graph::Easy: 0.55
+  Graph: 0.81
+  Graph::Easy: 0.56
   perl: 5.8.1
-version: 0.06
+version: 0.07

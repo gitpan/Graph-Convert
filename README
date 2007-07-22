@@ -6,7 +6,7 @@ from "Graph" and "Graph::Easy".
 
 It takes a graph object in either format, and converts it to the desired
 output format. It handles simple graphs as well as multi-edged graphs,
-and also carries the attributes over.
+and also carries all the attributes over.
 
 This enables you to use all the layout and formatting capabilities
 of "Graph::Easy" on "Graph" objects, as well as using the extensive

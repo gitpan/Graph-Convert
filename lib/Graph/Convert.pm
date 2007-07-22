@@ -9,7 +9,7 @@ use 5.008001;
 use Graph::Easy;
 use Graph;
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 use strict;
 
@@ -84,7 +84,10 @@ sub as_graph
   
   return $self->as_multiedged_graph($in, $opt) unless $in->is_simple_graph();
 
-  $opt = {} unless defined $opt; 
+  $opt = {} unless defined $opt;
+
+  $opt->{undirected} = 1 if $in->attribute('type') eq 'undirected';
+
   my $out = Graph->new( %$opt ); 
 
   $self->_add_basics($in,$out);
@@ -201,6 +204,7 @@ sub as_graph_easy
       $edge->set_attributes($attr);
       }
     }
+  $out->set_attribute('type','undirected') if $in->is_undirected();
 
   $out;
   }
@@ -327,6 +331,9 @@ the input.
 The optional parameter is an hash ref with options that is passed
 to C<Graph->new()>.
 
+Directed and undirected input graphs result automatically in the appropritate
+type of C<Graph> object being created.
+
 =head2 as_multiedged_graph()
 
         use Graph::Convert;
@@ -347,7 +354,8 @@ is only one edge going from node A to node B).
 
 Converts the given L<Graph> object into a L<Graph::Easy> object.
 
-This routine handles simple as well as multiedges graphs.
+This routine handles simple (directed or undirected) as well as multi-edged
+graphs.
 
 Multi-vertexed graphs are not supported e.g. each node must exist only once
 in the input graph.

@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 
-# Test additional options in as_graph():
+# Test additional options in as_graph() as well as support for undirected graphs:
 
 use Test::More;
 use strict;
 
 BEGIN
    {
-   plan tests => 22;
+   plan tests => 30;
    chdir 't' if -d 't';
    use lib '../lib';
    use_ok ("Graph::Convert") or die($@);
@@ -72,4 +72,28 @@ is ($graph->is_simple_graph(), 1, 'simple graph (2 nodes, 1 edge)');
 $graph_easy = Graph::Convert->as_graph_easy( $graph );
 
 is (scalar $graph_easy->nodes(), 2, '2 nodes');
+
+#############################################################################
+# test undirected graphs via type attribute
+
+$ge = Graph::Easy->new( undirected => 1 );
+
+is (ref($ge), 'Graph::Easy');
+is ($ge->attribute('type'), 'undirected', 'is undirected');
+is ($ge->is_undirected(), 1, 'is undirected');
+
+$ge->add_node( 'Berlin' );
+$ge->add_node( 'Bonn' );
+$ge->add_edge( 'Bonn', 'Berlin', 'by train' );
+
+$graph = Graph::Convert->as_graph( $ge );
+
+ok ($graph->is_undirected(), 'is undirected');
+is ($graph->is_simple_graph(), 1, 'simple graph (2 nodes, 1 edge)');
+
+$graph_easy = Graph::Convert->as_graph_easy( $graph );
+
+is (scalar $graph_easy->nodes(), 2, '2 nodes');
+is ($ge->attribute('type'), 'undirected', 'is undirected');
+is ($ge->is_undirected(), 1, 'is undirected');
 
