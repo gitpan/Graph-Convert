@@ -1,5 +1,12 @@
 Revision history for Graph::Convert:
 
+2007-08-12 v0.08 Tels 149 tests
+  * add as_undirected_graph()
+  * fix as_multiedged_graph() to work with undirected inputs
+  * further fixes to the workaround of the Graph bug with undirected graphs
+  * add a few details to the doc
+  * require Graph::Easy v0.57
+
 2007-07-22 v0.07 Tels 140 tests
   * support for undirected graphs
   * require Graph::Easy v0.56

@@ -9,7 +9,7 @@ use 5.008001;
 use Graph::Easy;
 use Graph;
 
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 use strict;
 
@@ -73,6 +73,9 @@ sub _add_basics
   $out;
   }
 
+#############################################################################
+# from Graph::Easy to Graph:
+
 sub as_graph
   {
   # convert a Graph::Easy object to a Graph object
@@ -82,11 +85,10 @@ sub as_graph
     "as_graph needs a Graph::Easy object, but got '". ref($in). "'" )
    unless ref($in) && $in->isa('Graph::Easy');
   
-  return $self->as_multiedged_graph($in, $opt) unless $in->is_simple_graph();
-
   $opt = {} unless defined $opt;
-
   $opt->{undirected} = 1 if $in->attribute('type') eq 'undirected';
+
+  return $self->as_multiedged_graph($in, $opt) unless $in->is_simple();
 
   my $out = Graph->new( %$opt ); 
 
@@ -96,17 +98,26 @@ sub as_graph
   for my $e ($in->edges())
     {
     my $from = $e->{from}->{name}; my $to = $e->{to}->{name};
-    my $edge = $out->add_edge($from,$to);
-    my $attr = $e->raw_attributes();
     if ($opt->{undirected})
       {
       # swap the arguments to avoid creating a spurious edge
       ($from,$to) = ($to,$from) if $e->{to}->{id} < $e->{from}->{id};
       }
+    my $edge = $out->add_edge($from,$to);
+    my $attr = $e->raw_attributes();
     $out->set_edge_attributes($from, $to, $attr);
     }
 
   $out;
+  }
+
+sub as_undirected_graph
+  {
+  # convert a Graph::Easy object to an undirected Graph object
+  my ($self, $in, $opt) = @_;
+
+  $opt->{undirected} = 1;
+  $self->as_graph($in,$opt);
   }
 
 sub as_multiedged_graph
@@ -128,6 +139,11 @@ sub as_multiedged_graph
     {
     # Adding an edge more than once will result in a new ID
     my $from = $e->{from}->{name}; my $to = $e->{to}->{name};
+    if ($opt->{undirected})
+      {
+      # swap the arguments to avoid creating a spurious edge
+      ($from,$to) = ($to,$from) if $e->{to}->{id} < $e->{from}->{id};
+      }
     my $id = $out->add_edge_get_id($from,$to);
     my $attr = $e->raw_attributes();
     $out->set_edge_attributes_by_id($from, $to, $id, $attr);
@@ -135,6 +151,9 @@ sub as_multiedged_graph
 
   $out;
   }
+
+#############################################################################
+# from Graph to Graph::Easy:
 
 sub as_graph_easy
   {
@@ -246,8 +265,8 @@ C<Graph::Convert> lets you convert graphs between the graph formats
 from L<Graph> and L<Graph::Easy>.
 
 It takes a graph object in either format, and converts it to the desired
-output format. It handles simple graphs as well as multi-edged graphs,
-and also carries the attributes over.
+output format. It handles simple graphs (directed or undirected) as well
+as multi-edged graphs, and also carries the attributes over.
 
 This enables you to use all the layout and formatting capabilities
 of C<Graph::Easy> on C<Graph> objects, as well as using the extensive
@@ -295,6 +314,8 @@ grid, as well the ability to output Graphviz and VCG/GDL code. This enables
 output of ASCII, HTML, SVG and all the formats that graphviz supports, like
 PDF or PNG.
 
+C<Graph::Easy> supports subgraphs (aka groups).
+
 In addition, C<Graph::Easy> supports class attributes. By setting the
 attribute for a class and putting objects (nodes/edges etc) into
 the proper class, it is easier to manipulate attributes for many
@@ -308,12 +329,13 @@ C<Graph::Convert> supports the following methods:
 
 =head2 as_graph()
 
-        use Graph::Convert;
+	use Graph::Convert;
 
-        my $graph_easy = Graph::Easy->new( );
-        my $graph = Graph::Convert->as_graph( $graph_easy );
+	my $graph_easy = Graph::Easy->new( );
+	$graph_easy->add_edge('A','B');
+	my $graph = Graph::Convert->as_graph( $graph_easy );
 
-        my $undirected_graph = 
+	my $undirected_graph = 
 	   Graph::Convert->as_graph( $graph_easy, { undirected => 1 } );
 
 Converts the given L<Graph::Easy> object into a L<Graph> object.
@@ -332,30 +354,55 @@ The optional parameter is an hash ref with options that is passed
 to C<Graph->new()>.
 
 Directed and undirected input graphs result automatically in the appropritate
-type of C<Graph> object being created.
+type of C<Graph> object being created, but you can force the creation
+of an undirected graph by either passing C<< { undirected => 1 } >> as
+option or use L<as_undirected_graph()>.
+
+=head2 as_undirected_graph()
+
+	use Graph::Convert;
+
+	my $graph_easy = Graph::Easy->new( );
+	$graph_easy->add_edge('A','B');
+	my $graph = Graph::Convert->as_undirected_graph( $graph_easy );
+
+Converts the given L<Graph::Easy> object into an undirected L<Graph>
+object, regardless whether the input graph is a directed graph or not.
 
 =head2 as_multiedged_graph()
 
-        use Graph::Convert;
+	use Graph::Convert;
 
-        my $graph_easy = Graph::Easy->new( );
-        my $graph = Graph::Convert->as_multiedged_graph( $graph_easy );
+	my $graph_easy = Graph::Easy->new( );
+	$graph_easy->add_edge('A','B');
+	my $graph = Graph::Convert->as_multiedged_graph( $graph_easy );
 
 Converts the given L<Graph::Easy> object into a multi-edged L<Graph>
 object, even if the input graph is a simple graph (meaning there
 is only one edge going from node A to node B).
 
+To create a multi-edged undirected graph, pass in C<< { undirected => 1 } >>
+as option:
+
+	use Graph::Convert;
+
+	my $graph_easy = Graph::Easy->new( );
+	$graph_easy->add_edge('A','B');
+	my $graph = Graph::Convert->as_multiedged_graph( $graph_easy, 
+		{ undirected => 1 } );
+
 =head2 as_graph_easy()
 
-        use Graph::Convert;
+	use Graph::Convert;
 
-        my $graph = Graph->new( );
-        my $graph_easy = Graph::Convert->as_graph_easy( $graph_easy );
+	my $graph = Graph->new( );
+	$graph_easy->add_edge('A','B');
+	my $graph_easy = Graph::Convert->as_graph_easy( $graph_easy );
 
 Converts the given L<Graph> object into a L<Graph::Easy> object.
 
 This routine handles simple (directed or undirected) as well as multi-edged
-graphs.
+graphs automatically.
 
 Multi-vertexed graphs are not supported e.g. each node must exist only once
 in the input graph.

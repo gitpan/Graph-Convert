@@ -19,6 +19,6 @@ recommends:
   Graph::Easy::Manual: 0.38
 requires: 
   Graph: 0.81
-  Graph::Easy: 0.56
+  Graph::Easy: 0.57
   perl: 5.8.1
-version: 0.07
+version: 0.08

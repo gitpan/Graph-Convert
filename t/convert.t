@@ -16,6 +16,7 @@ BEGIN
 can_ok ("Graph::Convert", qw/
   as_graph
   as_multiedged_graph
+  as_undirected_graph
   as_graph_easy
   /);
 

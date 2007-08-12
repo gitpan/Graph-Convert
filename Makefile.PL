@@ -13,7 +13,7 @@ name		'Graph-Convert';
 all_from	'lib/Graph/Convert.pm';
 
 requires	'Graph'		=> 0.81;
-requires	'Graph::Easy'	=> 0.56;
+requires	'Graph::Easy'	=> 0.57;
 
 recommends	'Graph::Easy::Manual'	=> 0.38;
 recommends	'Graph::Easy::As_svg'	=> 0.22;

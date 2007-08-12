@@ -7,7 +7,7 @@ use strict;
 
 BEGIN
    {
-   plan tests => 30;
+   plan tests => 39;
    chdir 't' if -d 't';
    use lib '../lib';
    use_ok ("Graph::Convert") or die($@);
@@ -94,6 +94,32 @@ is ($graph->is_simple_graph(), 1, 'simple graph (2 nodes, 1 edge)');
 $graph_easy = Graph::Convert->as_graph_easy( $graph );
 
 is (scalar $graph_easy->nodes(), 2, '2 nodes');
+is ($ge->attribute('type'), 'undirected', 'is undirected');
+is ($ge->is_undirected(), 1, 'is undirected');
+
+#############################################################################
+# test undirected multi-edged graphs via type attribute (bug in 0.07)
+
+$ge = Graph::Easy->new( undirected => 1 );
+
+is (ref($ge), 'Graph::Easy');
+is ($ge->attribute('type'), 'undirected', 'is undirected');
+is ($ge->is_undirected(), 1, 'is undirected');
+
+$ge->add_node( 'Berlin' );
+$ge->add_node( 'Bonn' );
+$ge->add_edge( 'Bonn', 'Berlin', 'by train' );
+$ge->add_edge( 'Bonn', 'Berlin', 'by car' );
+
+$graph = Graph::Convert->as_graph( $ge );
+
+ok ($graph->is_undirected(), 'is undirected');
+is ($graph->is_simple_graph(), 0, 'not a simple graph (2 nodes, 2 edges)');
+
+$graph_easy = Graph::Convert->as_graph_easy( $graph );
+
+is (scalar $graph_easy->nodes(), 2, '2 nodes');
+is (scalar $graph_easy->edges(), 2, '2 edges');
 is ($ge->attribute('type'), 'undirected', 'is undirected');
 is ($ge->is_undirected(), 1, 'is undirected');
 
