@@ -9,7 +9,7 @@ use 5.008001;
 use Graph::Easy;
 use Graph;
 
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 use strict;
 
@@ -351,7 +351,7 @@ is not supported, as that would require to drop arbitrary edges from
 the input.
 
 The optional parameter is an hash ref with options that is passed
-to C<Graph->new()>.
+to C<< Graph->new() >>.
 
 Directed and undirected input graphs result automatically in the appropritate
 type of C<Graph> object being created, but you can force the creation
@@ -416,7 +416,7 @@ L<Graph>, L<Graph::Easy> and L<Graph::Easy::Manual>.
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GPL version 2 or later.
 
-See the LICENSE file for a copy of the GPL.
+See the LICENSE file for a copy of the GPL 2.
 
 X<gpl>
 X<license>

@@ -5,8 +5,8 @@ Graph::Convert lets you convert graphs between the graph formats
 from "Graph" and "Graph::Easy".
 
 It takes a graph object in either format, and converts it to the desired
-output format. It handles simple graphs as well as multi-edged graphs,
-and also carries all the attributes over.
+output format. It handles undirected and directed graphs, in either simple
+or multi-edged form, and also carries all the attributes over.
 
 This enables you to use all the layout and formatting capabilities
 of "Graph::Easy" on "Graph" objects, as well as using the extensive

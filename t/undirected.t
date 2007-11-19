@@ -116,9 +116,15 @@ $graph = Graph::Convert->as_graph( $ge );
 ok ($graph->is_undirected(), 'is undirected');
 is ($graph->is_simple_graph(), 0, 'not a simple graph (2 nodes, 2 edges)');
 
+#print "# graph: $graph\n";
+#print $ge->as_txt(),"\n";
+
 $graph_easy = Graph::Convert->as_graph_easy( $graph );
 
+#print $graph_easy->as_txt(),"\n";
+
 is (scalar $graph_easy->nodes(), 2, '2 nodes');
+# this test fails with Graph v0.83:
 is (scalar $graph_easy->edges(), 2, '2 edges');
 is ($ge->attribute('type'), 'undirected', 'is undirected');
 is ($ge->is_undirected(), 1, 'is undirected');

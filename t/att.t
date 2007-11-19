@@ -7,7 +7,7 @@ use strict;
 
 BEGIN
    {
-   plan tests => 14;
+   plan tests => 16;
    chdir 't' if -d 't';
    use lib '../lib';
    use_ok ("Graph::Convert") or die($@);
@@ -67,13 +67,16 @@ $ge = Graph::Easy->new();
 $ge->add_edge('A','B');
 
 $ge->set_attribute('color', 'red');
+$ge->set_attribute('node', 'color', 'green');
 
 $g = Graph::Convert->as_graph( $ge );
 
 is ($g->get_graph_attribute('graph_color'),'red', 'graph color was carried over');
+is ($g->get_graph_attribute('node_color'), 'green', 'node class color was carried over');
 
 my $ge_2 = Graph::Convert->as_graph_easy( $g );
 
 is ($ge_2->get_attribute('graph','color'), 'red', 'graph class color was carried back');
-is ($ge_2->get_attribute('color'), 'red', 'graph color was carried back');
+is ($ge_2->get_attribute('node','color'),  'green', 'node class color was carried back');
+is ($ge_2->get_attribute('color'), 'red',  'graph color was carried back');
 
